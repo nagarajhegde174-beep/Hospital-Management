@@ -1,0 +1,23 @@
+# Maven build files
+**/target/
+*.jar
+*.war
+
+# Node
+**/node_modules/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+*.iml
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
