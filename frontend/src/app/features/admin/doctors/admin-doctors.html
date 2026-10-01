@@ -1,0 +1,116 @@
+<div class="page-container">
+  <h1 class="page-title">Doctors</h1>
+
+  <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="success-banner" *ngIf="successMessage">{{ successMessage }}</div>
+
+  <!-- Tabs -->
+  <div class="tab-row">
+    <button class="tab-btn" [class.active]="activeTab === 'registered'"
+      (click)="switchTab('registered')">Registered</button>
+    <button class="tab-btn" [class.active]="activeTab === 'pending'" (click)="switchTab('pending')">
+      Pending Approval
+      <span class="badge" *ngIf="pendingDoctors.length > 0">{{ pendingDoctors.length }}</span>
+    </button>
+  </div>
+
+  <!-- ── REGISTERED TAB ── -->
+  <ng-container *ngIf="activeTab === 'registered'">
+    <div class="loading-row" *ngIf="loading">
+      <span class="spinner"></span> Loading doctors…
+    </div>
+    <div class="controls-row" *ngIf="!loading && doctors.length > 0">
+      <input class="search-input" type="text" placeholder="Search by name, specialization…" [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()" />
+    </div>
+    <div class="empty-state" *ngIf="!loading && doctors.length === 0 && !errorMessage">
+      <p>No doctors registered.</p>
+    </div>
+    <div class="empty-state" *ngIf="!loading && doctors.length > 0 && filtered.length === 0">
+      <p>No results for "<strong>{{ searchTerm }}</strong>".</p>
+      <button class="btn-secondary" (click)="searchTerm = ''; onSearchChange()">Clear</button>
+    </div>
+    <div class="table-wrap card" *ngIf="!loading && paged.length > 0">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Specialization</th>
+            <th>Designation</th>
+            <th>Contact</th>
+            <th>Rating</th>
+            <th class="actions-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of paged; trackBy: trackByDoc">
+            <td class="text-muted">{{ d.id }}</td>
+            <td class="fw-600">Dr. {{ d.name }}</td>
+            <td>{{ d.specialization }}</td>
+            <td>{{ d.designation }}</td>
+            <td>{{ d.contactDetails }}</td>
+            <td>
+              <span class="rating-stars" *ngIf="doctorRatings[d.id]">
+                ★ {{ doctorRatings[d.id] | number:'1.1-1' }}
+              </span>
+              <span class="text-muted" style="font-size:12px"
+                *ngIf="doctorRatings[d.id] === 0 || doctorRatings[d.id] === null">
+                No ratings
+              </span>
+              <span class="text-muted" *ngIf="doctorRatings[d.id] === undefined">…</span>
+            </td>
+            <td class="actions-cell">
+              <button class="btn-delete" [disabled]="actionLoading[d.id]" (click)="deleteDoctor(d)">
+                {{ actionLoading[d.id] ? 'Deleting…' : 'Delete' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination-row" *ngIf="totalPages > 1">
+      <button class="btn-secondary" [disabled]="currentPage === 0" (click)="prevPage()">← Prev</button>
+      <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+      <button class="btn-secondary" [disabled]="currentPage === totalPages - 1" (click)="nextPage()">Next →</button>
+    </div>
+  </ng-container>
+
+  <!-- ── PENDING TAB ── -->
+  <ng-container *ngIf="activeTab === 'pending'">
+    <div class="loading-row" *ngIf="pendingLoading">
+      <span class="spinner"></span> Loading pending doctors…
+    </div>
+    <div class="empty-state" *ngIf="!pendingLoading && pendingDoctors.length === 0">
+      <p>No pending doctor registrations.</p>
+    </div>
+    <div class="table-wrap card" *ngIf="!pendingLoading && pendingDoctors.length > 0">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th class="actions-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of pendingDoctors">
+            <td class="text-muted">{{ d.userId }}</td>
+            <td class="fw-600">{{ d.email }}</td>
+            <td>{{ d.role }}</td>
+            <td class="actions-cell">
+              <button class="btn-approve" [disabled]="pendingActionLoading[d.userId]" (click)="approveDoctor(d)">
+                {{ pendingActionLoading[d.userId] ? 'Processing…' : 'Approve' }}
+              </button>
+              <button class="btn-delete" [disabled]="pendingActionLoading[d.userId]" (click)="rejectDoctor(d)">
+                {{ pendingActionLoading[d.userId] ? 'Processing…' : 'Reject' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+
+</div>

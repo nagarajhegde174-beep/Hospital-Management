@@ -1,0 +1,119 @@
+<div class="page-container">
+  <h1 class="page-title">Set My Schedule</h1>
+  <p class="page-subtitle text-muted">
+    Define your availability for a date. The system auto-generates 30-minute appointment slots.
+  </p>
+
+  <div class="schedule-layout">
+
+    <!-- LEFT: Create schedule -->
+    <div>
+      <h2 class="section-title">Create Schedule</h2>
+
+      <div class="error-banner"   *ngIf="errorMessage">{{ errorMessage }}</div>
+      <div class="success-banner" *ngIf="successMessage">{{ successMessage }}</div>
+
+      <div class="schedule-card card">
+        <form (ngSubmit)="submit()" #schedForm="ngForm">
+
+          <div class="form-group">
+            <label for="schedDate">Date</label>
+            <input id="schedDate" type="date" name="date"
+                   [(ngModel)]="form.date" [min]="minDate" required />
+            <small class="hint">Must be at least 3 days in advance.</small>
+          </div>
+
+          <div class="time-row">
+            <div class="form-group">
+              <label for="shiftStart">Shift Start</label>
+              <input id="shiftStart" type="time" name="shiftStart"
+                     [(ngModel)]="form.shiftStart" required />
+            </div>
+            <div class="form-group">
+              <label for="shiftEnd">Shift End</label>
+              <input id="shiftEnd" type="time" name="shiftEnd"
+                     [(ngModel)]="form.shiftEnd" required />
+            </div>
+            <div class="form-group">
+              <label for="breakStart">Break Start <span class="optional">(optional)</span></label>
+              <input id="breakStart" type="time" name="breakStart"
+                     [(ngModel)]="form.breakStart" />
+            </div>
+          </div>
+
+          <div class="slot-preview" *ngIf="form.shiftStart && form.shiftEnd">
+            🕐 Slots every 30 min from {{ form.shiftStart }} to {{ form.shiftEnd }}
+          </div>
+
+          <button type="submit" class="btn-primary submit-btn"
+                  [disabled]="loading || schedForm.invalid">
+            {{ loading ? 'Creating…' : 'Generate Schedule' }}
+          </button>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- RIGHT: View existing slots -->
+    <div>
+      <h2 class="section-title">View My Slots</h2>
+
+      <div class="schedule-card card">
+
+  <!-- Available dates list -->
+  <div class="loading-row" *ngIf="datesLoading">
+    <span class="spinner"></span> Loading dates…
+  </div>
+
+  <div *ngIf="!datesLoading && availableDates.length > 0">
+    <p class="hint" style="margin-bottom: 8px;">Select a date to view slots:</p>
+    <div class="date-list">
+      <button class="date-pill"
+              *ngFor="let d of availableDates"
+              [class.active]="viewDate === d"
+              (click)="selectDate(d)">
+        {{ d }}
+      </button>
+    </div>
+  </div>
+
+  <div class="empty-state small" *ngIf="!datesLoading && availableDates.length === 0">
+    <p class="text-muted">No schedules created yet.</p>
+  </div>
+
+        <div class="loading-row" *ngIf="viewLoading">
+          <span class="spinner"></span> Loading slots…
+        </div>
+
+        <div class="error-banner" *ngIf="viewError">{{ viewError }}</div>
+
+        <ng-container *ngIf="!viewLoading && viewDate && viewSlots.length > 0">
+          <div class="slot-summary">
+            <span class="slot-stat free">{{ freeCount }} free</span>
+            <span class="slot-stat booked">{{ bookedCount }} booked</span>
+            <span class="slot-stat total">{{ viewSlots.length }} total</span>
+          </div>
+          <div class="slot-grid">
+            <div class="slot-pill"
+                 *ngFor="let s of viewSlots"
+                 [class.slot-booked]="s.booked"
+                 [class.slot-free]="!s.booked">
+              {{ formatSlot(s.startTime) }}
+              <span class="slot-status">{{ s.booked ? '✗' : '✓' }}</span>
+            </div>
+          </div>
+        </ng-container>
+
+        <div class="empty-state small" *ngIf="!viewLoading && viewDate && viewSlots.length === 0 && !viewError">
+          <p>No schedule set for this date.</p>
+          <small>Use the form on the left to create one.</small>
+        </div>
+
+        <div class="empty-state small" *ngIf="!viewDate">
+          <p class="text-muted">Pick a date to see your slots.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

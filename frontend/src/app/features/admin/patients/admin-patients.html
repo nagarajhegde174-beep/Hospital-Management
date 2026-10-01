@@ -1,0 +1,104 @@
+<div class="page-container">
+  <h1 class="page-title">Patients</h1>
+
+  <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="success-banner" *ngIf="successMessage">{{ successMessage }}</div>
+
+  <div class="loading-row" *ngIf="loading">
+    <span class="spinner"></span> Loading patients…
+  </div>
+
+  <div class="controls-row" *ngIf="!loading && patients.length > 0">
+    <input class="search-input" type="text" placeholder="Search by name or contact" [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange()" />
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && patients.length === 0 && !errorMessage">
+    <p>No patients registered.</p>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && patients.length > 0 && filtered.length === 0">
+    <p>No results for "<strong>{{ searchTerm }}</strong>".</p>
+    <button class="btn-secondary" (click)="searchTerm = ''; onSearchChange()">Clear</button>
+  </div>
+
+  <div class="table-wrap card" *ngIf="!loading && paged.length > 0">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Gender</th>
+          <th>Date of Birth</th>
+          <th>Contact</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let p of paged; trackBy: trackByPatient">
+          <!-- Patient row -->
+          <tr>
+            <td class="text-muted">{{ p.patientId }}</td>
+            <td class="fw-600">{{ p.name }}</td>
+            <td>{{ p.gender | titlecase }}</td>
+            <td>{{ formatDate(p.dateOfBirth) }}</td>
+            <td>{{ p.contactDetails }}</td>
+            <td class="actions-cell">
+              <button class="btn-history" [class.active]="viewingHistoryFor === p.patientId" (click)="toggleHistory(p)"
+                title="View medical history">
+                {{ viewingHistoryFor === p.patientId ? 'Hide' : 'History' }}
+              </button>
+              <button class="btn-delete" [disabled]="actionLoading[p.patientId]" (click)="deletePatient(p)"
+                title="Delete patient">
+                {{ actionLoading[p.patientId] ? '…' : 'Delete' }}
+              </button>
+            </td>
+          </tr>
+
+          <!-- Expandable medical history row -->
+          <tr *ngIf="viewingHistoryFor === p.patientId" class="history-expand-row">
+            <td colspan="6" class="history-expand-cell">
+              <div class="history-panel">
+                <div class="history-panel-header">Medical History — {{ p.name }}</div>
+
+                <div class="history-loading" *ngIf="historyLoading[p.patientId]">
+                  <span class="spinner-sm"></span> Loading history…
+                </div>
+
+                <div class="history-empty"
+                  *ngIf="!historyLoading[p.patientId] && patientHistory[p.patientId]?.length === 0">
+                  No medical records found for this patient.
+                </div>
+
+                <div class="history-list"
+                  *ngIf="!historyLoading[p.patientId] && (patientHistory[p.patientId]?.length ?? 0) > 0">
+                  <div class="history-record" *ngFor="let r of patientHistory[p.patientId]; trackBy: trackByRecord">
+                    <div class="record-top">
+                      <div>
+                        <span class="record-date">{{ formatDate(r.diagnosedAt) }}</span>
+                        <span class="record-diagnosis">{{ r.diagnosis }}</span>
+                      </div>
+                      <button class="btn-delete-record" [disabled]="recordActionLoading[r.recordId]"
+                        (click)="deleteRecord(p.patientId, r)">
+                        {{ recordActionLoading[r.recordId] ? 'Deleting…' : 'Delete' }}
+                      </button>
+                    </div>
+                    <div class="record-meds" *ngIf="r.prescribedMeds.length">
+                      <span class="med-pill" *ngFor="let m of r.prescribedMeds">{{ m }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination-row" *ngIf="totalPages > 1">
+    <button class="btn-secondary" [disabled]="currentPage === 0" (click)="prevPage()">← Prev</button>
+    <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+    <button class="btn-secondary" [disabled]="currentPage === totalPages - 1" (click)="nextPage()">Next →</button>
+  </div>
+</div>

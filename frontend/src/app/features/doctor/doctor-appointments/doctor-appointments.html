@@ -1,0 +1,270 @@
+<div class="page-container">
+  <h1 class="page-title">My Appointments</h1>
+  <div class="rating-banner" *ngIf="myRating !== null && myRating > 0">
+    ★ Your average patient rating: <strong>{{ myRating | number:'1.1-1' }} / 5</strong>
+  </div>
+  <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="success-banner" *ngIf="successMessage">{{ successMessage }}</div>
+
+  <div class="tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'upcoming'" (click)="setTab('upcoming')">
+      Upcoming <span class="tab-count">{{ upcoming.length }}</span>
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'past'" (click)="setTab('past')">
+      Past / Done <span class="tab-count">{{ past.length }}</span>
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="controls-row" *ngIf="!loading && activeList().length > 0">
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Search by patient name, date or code…"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange()" />
+  </div>
+
+  <!-- UPCOMING TAB -->
+  <div *ngIf="activeTab === 'upcoming'">
+    <div class="loading-row" *ngIf="loading">
+      <span class="spinner"></span> Loading appointments…
+    </div>
+    <div class="empty-state" *ngIf="!loading && upcoming.length === 0 && !errorMessage">
+      <p>No upcoming appointments.</p>
+      <small>Patients will appear here once they book a slot from your schedule.</small>
+    </div>
+    <div class="empty-state" *ngIf="!loading && upcoming.length > 0 && filtered.length === 0">
+      <p>No results for "<strong>{{ searchTerm }}</strong>".</p>
+      <button class="btn-secondary" (click)="searchTerm = ''; onSearchChange()">Clear search</button>
+    </div>
+
+    <div class="appt-card card" *ngFor="let a of paged; trackBy: trackByAppt">
+      <div class="appt-header">
+        <div class="patient-info">
+          <div class="patient-avatar"></div>
+          <div>
+            <div class="patient-name">{{ getPatientName(a.patientId) }}</div>
+            <div class="patient-contact text-muted" *ngIf="getPatientContact(a.patientId)">
+              {{ getPatientContact(a.patientId) }}
+            </div>
+          </div>
+        </div>
+        <span class="badge badge-{{ a.status | lowercase }}">{{ a.status }}</span>
+      </div>
+
+      <div class="appt-details">
+        <span class="detail-item">{{ formatDate(a.appointmentDate) }}</span>
+        <span class="detail-item">{{ formatTime(a.appointmentDate) }}</span>
+        <span class="detail-item code-pill">{{ a.confirmationCode.slice(0,8) }}…</span>
+      </div>
+
+      <div class="appt-actions">
+        <button class="btn-success"
+                [disabled]="actionLoading[a.confirmationCode] || !hasPrescription(a.confirmationCode)"
+                [title]="!hasPrescription(a.confirmationCode) ? 'Add a prescription before marking complete' : ''"
+                (click)="confirmComplete(a)">
+          {{ actionLoading[a.confirmationCode] ? 'Updating…' : 'Mark Complete' }}
+        </button>
+        <ng-container *ngIf="prescribingFor !== a.confirmationCode">
+          <button class="btn-secondary" (click)="startPrescription(a)">
+            Add / Edit Prescription
+          </button>
+          <button class="btn-secondary"
+                  [class.active-history]="viewingHistoryFor === a.confirmationCode"
+                  (click)="toggleHistory(a)">
+            {{ viewingHistoryFor === a.confirmationCode ? 'Hide History' : 'View History' }}
+          </button>
+        </ng-container>
+      </div>
+
+      <ng-container *ngIf="viewingHistoryFor === a.confirmationCode && prescribingFor !== a.confirmationCode">
+        <ng-container *ngTemplateOutlet="historyPanel; context: { a: a }"></ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="prescribingFor === a.confirmationCode">
+        <ng-container *ngTemplateOutlet="prescriptionPanel; context: { a: a }"></ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- PAST / DONE TAB -->
+  <div *ngIf="activeTab === 'past'">
+    <div class="loading-row" *ngIf="loading">
+      <span class="spinner"></span> Loading appointments…
+    </div>
+    <div class="empty-state" *ngIf="!loading && past.length === 0 && !errorMessage">
+      <p>No past appointments found.</p>
+    </div>
+    <div class="empty-state" *ngIf="!loading && past.length > 0 && filtered.length === 0">
+      <p>No results for "<strong>{{ searchTerm }}</strong>".</p>
+      <button class="btn-secondary" (click)="searchTerm = ''; onSearchChange()">Clear search</button>
+    </div>
+
+    <div class="appt-card card" *ngFor="let a of paged; trackBy: trackByAppt">
+      <div class="appt-header">
+        <div class="patient-info">
+          <div class="patient-avatar"></div>
+          <div>
+            <div class="patient-name">{{ getPatientName(a.patientId) }}</div>
+            <div class="patient-contact text-muted" *ngIf="getPatientContact(a.patientId)">
+              {{ getPatientContact(a.patientId) }}
+            </div>
+          </div>
+        </div>
+        <span class="badge badge-{{ a.status | lowercase }}">{{ a.status }}</span>
+      </div>
+
+      <div class="appt-details">
+        <span class="detail-item">{{ formatDate(a.appointmentDate) }}</span>
+        <span class="detail-item">{{ formatTime(a.appointmentDate) }}</span>
+        <span class="detail-item code-pill">{{ a.confirmationCode.slice(0,8) }}…</span>
+      </div>
+
+      <!-- Patient Rating -->
+      <div class="patient-rating"
+           *ngIf="a.status === 'COMPLETED' && appointmentRatings[a.appointmentId] !== undefined">
+        <span *ngIf="appointmentRatings[a.appointmentId] > 0" class="rating-given">
+          Patient rated:
+          <span class="stars">
+            <span *ngFor="let s of [1,2,3,4,5]"
+                  [class.filled]="s <= appointmentRatings[a.appointmentId]">★</span>
+          </span>
+          {{ appointmentRatings[a.appointmentId] }}/5
+        </span>
+        <span *ngIf="appointmentRatings[a.appointmentId] === 0" class="no-rating">
+          No rating given yet
+        </span>
+      </div>
+
+      <!-- Actions (past tab) -->
+      <div class="appt-actions" *ngIf="prescribingFor !== a.confirmationCode">
+        <button class="btn-secondary"
+                *ngIf="a.status === 'COMPLETED'"
+                (click)="startPrescription(a)">
+          Add / Edit Prescription
+        </button>
+        <button class="btn-secondary"
+                [class.active-history]="viewingHistoryFor === a.confirmationCode"
+                (click)="toggleHistory(a)">
+          {{ viewingHistoryFor === a.confirmationCode ? 'Hide History' : 'View History' }}
+        </button>
+      </div>
+
+      <ng-container *ngIf="viewingHistoryFor === a.confirmationCode && prescribingFor !== a.confirmationCode">
+        <ng-container *ngTemplateOutlet="historyPanel; context: { a: a }"></ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="prescribingFor === a.confirmationCode">
+        <ng-container *ngTemplateOutlet="prescriptionPanel; context: { a: a }"></ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-row" *ngIf="!loading && totalPages > 1">
+    <button class="btn-secondary" [disabled]="currentPage === 0" (click)="prevPage()">← Prev</button>
+    <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+    <button class="btn-secondary" [disabled]="currentPage === totalPages - 1" (click)="nextPage()">Next →</button>
+  </div>
+</div>
+
+<!-- Read-only History Panel -->
+<ng-template #historyPanel let-a="a">
+  <div class="history-panel standalone-history">
+    <h5 class="history-title">Medical History — {{ getPatientName(a.patientId) }}</h5>
+    <div class="loading-row" *ngIf="patientHistory[a.confirmationCode] === undefined">
+      <span class="spinner"></span> Loading history…
+    </div>
+    <div *ngIf="patientHistory[a.confirmationCode] !== undefined">
+      <div *ngIf="patientHistory[a.confirmationCode].length === 0" class="text-muted" style="font-size:0.875rem; padding:0.5rem 0;">
+        No medical records found for this patient.
+      </div>
+      <div class="history-record" *ngFor="let rec of patientHistory[a.confirmationCode]; trackBy: trackByRecord">
+        <div class="history-record-header">
+          <span class="history-date">{{ formatDate(rec.diagnosedAt) }}</span>
+          <span class="history-diagnosis">{{ rec.diagnosis }}</span>
+        </div>
+        <div class="history-meds" *ngIf="rec.prescribedMeds && rec.prescribedMeds.length > 0">
+          <span class="med-tag" *ngFor="let m of rec.prescribedMeds; trackBy: trackByIdx">{{ m | titlecase }}</span>
+        </div>
+        <div class="text-muted" style="font-size:0.75rem;"
+             *ngIf="!rec.prescribedMeds || rec.prescribedMeds.length === 0">
+          No medications recorded.
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Prescription Panel -->
+<ng-template #prescriptionPanel let-a="a">
+  <div class="prescription-form">
+    <h4 class="rx-title">
+      {{ editingRecordId ? 'Edit Prescription' : 'New Prescription' }} — {{ getPatientName(a.patientId) }}
+    </h4>
+    <p class="text-muted" style="font-size:0.8rem; margin-bottom:0.75rem;" *ngIf="editingRecordId">
+      A prescription already exists for today. You are editing it.
+    </p>
+
+    <div class="history-panel" *ngIf="getPastHistory(a.confirmationCode).length > 0">
+      <h5 class="history-title">Previous Records for this Patient</h5>
+      <div class="history-record" *ngFor="let rec of getPastHistory(a.confirmationCode); trackBy: trackByRecord">
+        <div class="history-record-header">
+          <span class="history-date">{{ formatDate(rec.diagnosedAt) }}</span>
+          <span class="history-diagnosis">{{ rec.diagnosis }}</span>
+        </div>
+        <div class="history-meds" *ngIf="rec.prescribedMeds && rec.prescribedMeds.length > 0">
+          <span class="med-tag" *ngFor="let m of rec.prescribedMeds; trackBy: trackByIdx">{{ m | titlecase }}</span>
+        </div>
+        <div class="text-muted" style="font-size:0.75rem;"
+             *ngIf="!rec.prescribedMeds || rec.prescribedMeds.length === 0">
+          No medications recorded.
+        </div>
+      </div>
+    </div>
+    <div class="history-panel history-empty"
+         *ngIf="patientHistory[a.confirmationCode] !== undefined && getPastHistory(a.confirmationCode).length === 0 && !editingRecordId">
+      <p class="text-muted">No previous records for this patient.</p>
+    </div>
+
+    <div class="form-group">
+      <label>Diagnosis <span class="required">*</span></label>
+      <input type="text" [(ngModel)]="prescriptionForm.diagnosis"
+             placeholder="e.g. Viral fever" maxlength="200" />
+    </div>
+
+    <div class="form-group">
+      <label>Date of consultation</label>
+      <input type="date" [(ngModel)]="prescriptionForm.diagnosedAt" />
+    </div>
+
+    <div class="form-group">
+      <label>Medications <span class="required-hint">(at least 1 required)</span></label>
+      <div class="med-input-row">
+        <input type="text" [(ngModel)]="prescriptionForm.medicInput"
+               placeholder="e.g. Paracetamol 500mg"
+               (keydown.enter)="addMed(); $event.preventDefault()" />
+        <button type="button" class="btn-secondary add-med-btn" (click)="addMed()">+ Add</button>
+      </div>
+      <div class="med-tags" *ngIf="prescriptionForm.meds.length > 0">
+        <span class="med-tag" *ngFor="let med of prescriptionForm.meds; let i = index; trackBy: trackByIdx">
+          {{ med | titlecase }}
+          <button class="remove-med" (click)="removeMed(i)" title="Remove">×</button>
+        </span>
+      </div>
+      <small class="text-muted" *ngIf="prescriptionForm.meds.length === 0">
+        Type a medication and press Enter or click + Add.
+      </small>
+    </div>
+
+    <div class="rx-actions">
+      <button class="btn-primary"
+              [disabled]="!prescriptionForm.diagnosis.trim() || prescriptionForm.meds.length === 0 || prescriptionLoading[a.confirmationCode]"
+              (click)="submitPrescription(a)">
+        {{ prescriptionLoading[a.confirmationCode] ? 'Saving…' : (editingRecordId ? 'Update Prescription' : 'Save Prescription') }}
+      </button>
+      <button class="btn-secondary" (click)="cancelPrescription()">Cancel</button>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,303 @@
+:host { display: block; }
+
+.landing-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%);
+}
+
+/* ── Top bar ────────────────────────────── */
+.landing-nav {
+  background: #ffffff;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.875rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  text-decoration: none;
+}
+
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.link-signin {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.link-signin:hover { color: var(--color-primary); text-decoration: none; }
+
+.btn-register {
+  padding: 0.5rem 1.125rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.btn-register:hover { text-decoration: none; }
+
+/* ── Hero ───────────────────────────────── */
+.hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 5rem;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.pill {
+  display: inline-block;
+  background: #dbeafe;
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 1.75rem;
+}
+
+.hero-title {
+  font-size: 3.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--color-text);
+  margin-bottom: 1.5rem;
+}
+
+.hero-title .accent { color: var(--color-primary); }
+
+.hero-sub {
+  font-size: 1.0625rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  max-width: 540px;
+  margin-bottom: 2rem;
+}
+
+.cta-row {
+  display: flex;
+  gap: 0.875rem;
+  margin-bottom: 2.5rem;
+}
+
+.cta-primary {
+  padding: 0.875rem 1.75rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.cta-primary:hover { text-decoration: none; }
+
+.btn-ghost {
+  background: #ffffff;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-ghost:hover {
+  background: var(--color-bg-alt);
+  border-color: var(--color-primary);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.stat-row {
+  display: flex;
+  gap: 3rem;
+}
+
+.stat-num {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+  margin-top: 0.25rem;
+}
+
+/* ── Floating cards ─────────────────────── */
+.hero-art {
+  position: relative;
+  min-height: 360px;
+}
+
+.card-float {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.18),
+              0 2px 6px rgba(0,0,0,0.04);
+}
+
+.card-slots {
+  top: 0;
+  right: 0;
+  width: 280px;
+  transform: rotate(4deg);
+}
+
+.card-appt {
+  bottom: 0;
+  left: 0;
+  width: 290px;
+  transform: rotate(-3deg);
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.dot-blue  { background: var(--color-primary); }
+.dot-green { background: var(--color-success); }
+
+.slots-header,
+.appt-header {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.875rem;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.slot {
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0.625rem 0.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.slot-active {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+.appt-doctor {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 0.125rem;
+}
+
+.appt-spec {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.appt-when {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  margin-bottom: 0.875rem;
+}
+
+.badge-confirmed {
+  display: inline-block;
+  background: #dbeafe;
+  color: var(--color-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* ── Responsive ─────────────────────────── */
+@media (max-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .hero-title { font-size: 2.25rem; }
+  .hero { padding: 2.5rem 1.25rem 3rem; }
+
+  .hero-art {
+    min-height: 320px;
+  }
+
+  .card-slots { right: 1rem; }
+  .card-appt  { left: 1rem; }
+}
+
+@media (max-width: 560px) {
+  .hero-title { font-size: 1.875rem; }
+  .cta-row { flex-direction: column; align-items: stretch; }
+  .stat-row { gap: 2rem; }
+  .card-slots,
+  .card-appt {
+    position: relative;
+    width: 100%;
+    transform: none;
+    margin-bottom: 1rem;
+  }
+  .hero-art { min-height: 0; }
+}

@@ -1,0 +1,71 @@
+<div class="page-container">
+  <h1 class="page-title">Medical History</h1>
+  <p class="text-muted page-subtitle">Your diagnosis records and prescribed medications from past consultations.</p>
+
+  <div class="error-banner"   *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="success-banner" *ngIf="successMessage">{{ successMessage }}</div>
+
+  <div class="loading-row" *ngIf="loading">
+    <span class="spinner"></span> Loading records…
+  </div>
+
+  <!-- Search + Sort controls -->
+  <div class="controls-row" *ngIf="!loading && records.length > 0">
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Search by diagnosis or medication…"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange()" />
+    <button class="btn-secondary sort-btn" (click)="toggleSort()">
+      {{ sortOrder === 'desc' ? '↓ Newest first' : '↑ Oldest first' }}
+    </button>
+  </div>
+
+  <!-- Empty state — no records at all -->
+  <div class="empty-state" *ngIf="!loading && records.length === 0 && !errorMessage">
+    <div class="empty-icon"></div>
+    <p>No medical records found.</p>
+    <small>Your diagnosis and prescription records will appear here after consultations.</small>
+  </div>
+
+  <!-- Empty state — search returned nothing -->
+  <div class="empty-state" *ngIf="!loading && records.length > 0 && filtered.length === 0">
+    <p>No records match "<strong>{{ searchTerm }}</strong>".</p>
+    <button class="btn-secondary" (click)="searchTerm = ''; onSearchChange()">Clear search</button>
+  </div>
+
+  <!-- Record cards -->
+  <div class="record-card card" *ngFor="let r of paged; trackBy: trackByRecord">
+    <div class="record-header">
+      <div class="record-meta">
+        <span class="record-date">{{ formatDate(r.diagnosedAt) }}</span>
+        <span class="record-id text-muted">
+          {{ r.doctorId ? 'Dr. ' + (doctorNames[r.doctorId] || '…') : '' }}
+        </span>
+      </div>
+    </div>
+    <div class="record-body">
+      <div class="diagnosis-row">
+        <span class="field-label">Diagnosis</span>
+        <span class="diagnosis-text">{{ r.diagnosis | titlecase }}</span>
+      </div>
+      <div class="meds-row" *ngIf="r.prescribedMeds && r.prescribedMeds.length > 0">
+        <span class="field-label">Prescribed Medications</span>
+        <div class="med-tags">
+          <span class="med-tag" *ngFor="let med of r.prescribedMeds; trackBy: trackByIdx">{{ med | titlecase }}</span>
+        </div>
+      </div>
+      <div class="no-meds text-muted" *ngIf="!r.prescribedMeds || r.prescribedMeds.length === 0">
+        No medications prescribed for this record.
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-row" *ngIf="!loading && totalPages > 1">
+    <button class="btn-secondary" [disabled]="currentPage === 0" (click)="prevPage()">← Prev</button>
+    <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+    <button class="btn-secondary" [disabled]="currentPage === totalPages - 1" (click)="nextPage()">Next →</button>
+  </div>
+</div>

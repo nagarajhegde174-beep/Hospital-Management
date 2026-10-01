@@ -1,0 +1,163 @@
+<div class="register-page">
+  <div class="register-card card">
+
+    <div class="register-header">
+      <div class="logo-row">
+        <img src="Hams.jpg" alt="HAMS" class="logo-img" />
+        <h1>HAMS</h1>
+      </div>
+      <p class="subtitle">Hospital Appointment Management System</p>
+    </div>
+
+    <!-- Role toggle -->
+    <div class="role-toggle">
+      <button type="button" class="role-btn" [class.active]="isPatient" (click)="switchRole('PATIENT')">
+        Patient
+      </button>
+      <button type="button" class="role-btn" [class.active]="isDoctor" (click)="switchRole('DOCTOR')">
+        Doctor
+      </button>
+    </div>
+
+    <div class="success-banner" *ngIf="successMessage">{{ successMessage }}</div>
+    <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" novalidate>
+
+      <!-- Row 1: Name + Email -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Full name <span class="required">*</span></label>
+          <input type="text" id="name" name="name" [(ngModel)]="name" required minlength="2" #nameField="ngModel"
+            placeholder="{{ isDoctor ? 'Dr. Rajesh Kumar' : 'Aarav Sharma' }}" />
+          <span class="field-error" *ngIf="nameField.invalid && nameField.touched">
+            <span *ngIf="nameField.errors?.['required']">Full name is required.</span>
+            <span *ngIf="nameField.errors?.['minlength']">At least 2 characters.</span>
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email address <span class="required">*</span></label>
+          <input type="email" id="email" name="email" [(ngModel)]="email" required email #emailField="ngModel"
+            placeholder="you@example.com" />
+          <span class="field-error" *ngIf="emailField.invalid && emailField.touched">
+            <span *ngIf="emailField.errors?.['required']">Email is required.</span>
+            <span *ngIf="emailField.errors?.['email']">Enter a valid email.</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Row 2: Password + Confirm Password -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">Password <span class="required">*</span></label>
+          <div class="password-wrapper">
+            <input [type]="showPassword ? 'text' : 'password'" id="password" name="password" [(ngModel)]="password"
+              required minlength="8" pattern="(?=.*[A-Z])(?=.*[0-9]).{8,}" #passwordField="ngModel"
+              placeholder="Min 8, 1 uppercase, 1 number" />
+            <button type="button" class="eye-btn" (click)="showPassword = !showPassword"
+              [title]="showPassword ? 'Hide password' : 'Show password'">
+              {{ showPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+          <span class="field-error" *ngIf="passwordField.invalid && passwordField.touched">
+            <span *ngIf="passwordField.errors?.['required']">Password is required.</span>
+            <span *ngIf="passwordField.errors?.['minlength'] || passwordField.errors?.['pattern']">
+              Min 8 chars, 1 uppercase, 1 number.
+            </span>
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm password <span class="required">*</span></label>
+          <div class="password-wrapper">
+            <input [type]="showConfirm ? 'text' : 'password'" id="confirmPassword" name="confirmPassword"
+              [(ngModel)]="confirmPassword" required #confirmField="ngModel" placeholder="Re-enter password" />
+            <button type="button" class="eye-btn" (click)="showConfirm = !showConfirm"
+              [title]="showConfirm ? 'Hide password' : 'Show password'">
+              {{ showConfirm ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+          <span class="field-error" *ngIf="confirmField.touched">
+            <span *ngIf="confirmField.errors?.['required']">Please confirm your password.</span>
+            <span *ngIf="!confirmField.errors?.['required'] && !passwordsMatch">Passwords do not match.</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Row 3: Phone + (Patient: DOB) / (Doctor: Specialization) -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="contactDetails">Phone number <span class="required">*</span></label>
+          <input type="tel" id="contactDetails" name="contactDetails" [(ngModel)]="contactDetails" required
+            pattern="[0-9]{10}" #contactField="ngModel" placeholder="10-digit mobile number" />
+          <span class="field-error" *ngIf="contactField.invalid && contactField.touched">
+            <span *ngIf="contactField.errors?.['required']">Phone number is required.</span>
+            <span *ngIf="contactField.errors?.['pattern']">Enter a valid 10-digit number.</span>
+          </span>
+        </div>
+
+        <!-- Patient: DOB -->
+        <div class="form-group" *ngIf="isPatient">
+          <label for="dateOfBirth">Date of birth <span class="required">*</span></label>
+          <input type="date" id="dateOfBirth" name="dateOfBirth" [(ngModel)]="dateOfBirth" required [max]="maxDob"
+            #dobField="ngModel" />
+          <span class="field-error" *ngIf="dobField.invalid && dobField.touched">
+            Date of birth is required.
+          </span>
+        </div>
+
+        <!-- Doctor: Specialization -->
+        <div class="form-group" *ngIf="isDoctor">
+          <label for="specialization">Specialization <span class="required">*</span></label>
+          <input type="text" id="specialization" name="specialization" [(ngModel)]="specialization" required
+            #specField="ngModel" placeholder="e.g. Cardiology, Dermatology" />
+          <span class="field-error" *ngIf="specField.invalid && specField.touched">
+            Specialization is required.
+          </span>
+        </div>
+      </div>
+
+      <!-- Row 4: (Patient: Gender) / (Doctor: Designation) -->
+      <ng-container *ngIf="isPatient">
+        <div class="form-group">
+          <label for="gender">Gender <span class="required">*</span></label>
+          <select id="gender" name="gender" [(ngModel)]="gender" required #genderField="ngModel">
+            <option value="">Select gender</option>
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
+            <option value="OTHER">Other</option>
+          </select>
+          <span class="field-error" *ngIf="genderField.invalid && genderField.touched">
+            Gender is required.
+          </span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="isDoctor">
+        <div class="form-group">
+          <label for="designation">Designation <span class="required">*</span></label>
+          <input type="text" id="designation" name="designation" [(ngModel)]="designation" required
+            #desigField="ngModel" placeholder="e.g. Senior Consultant, Resident" />
+          <span class="field-error" *ngIf="desigField.invalid && desigField.touched">
+            Designation is required.
+          </span>
+        </div>
+      </ng-container>
+
+      <button type="submit" class="btn-primary submit-btn" [disabled]="loading || !passwordsMatch">
+        <span *ngIf="!loading">Create {{ isDoctor ? 'Doctor' : 'Patient' }} account</span>
+        <span *ngIf="loading">Creating account…</span>
+      </button>
+
+    </form>
+
+    <p class="login-link">
+      Already have an account? <a routerLink="/login">Sign in</a>
+    </p>
+    <p class="login-link">
+      <a routerLink="/">← Back to home</a>
+    </p>
+
+  </div>
+</div>

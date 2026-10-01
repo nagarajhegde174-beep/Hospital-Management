@@ -1,0 +1,39 @@
+<div class="page-container">
+
+  <div class="welcome-card">
+    <div class="welcome-text">
+      <h1 class="welcome-title">Welcome back, {{ displayName }}</h1>
+      <p class="welcome-sub">{{ todayLabel }}</p>
+    </div>
+    <span class="portal-pill">PATIENT PORTAL</span>
+  </div>
+
+  <div class="dashboard-grid">
+
+    <div class="dash-card card">
+      <h2>Book Appointment</h2>
+      <p>Find a doctor by specialization and lock in a slot in seconds.</p>
+      <a routerLink="/patient/book-appointment" class="btn-primary dash-link">Book now</a>
+    </div>
+
+    <div class="dash-card card">
+      <h2>My Appointments</h2>
+      <p>View upcoming, past, and cancelled appointments.</p>
+      <a routerLink="/patient/appointments" class="btn-primary dash-link">View appointments</a>
+    </div>
+
+    <div class="dash-card card">
+      <h2>Medical History</h2>
+      <p>View your diagnosis records and prescribed medications.</p>
+      <a routerLink="/patient/medical-history" class="btn-primary dash-link">View records</a>
+    </div>
+
+    <div class="dash-card card">
+      <h2>My Profile</h2>
+      <p>Update your personal and contact details.</p>
+      <a routerLink="/patient/profile" class="btn-primary dash-link">Edit profile</a>
+    </div>
+
+  </div>
+
+</div>

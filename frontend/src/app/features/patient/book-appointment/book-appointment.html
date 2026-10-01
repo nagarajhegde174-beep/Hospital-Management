@@ -1,0 +1,155 @@
+<div class="page-container">
+
+  <div class="page-header">
+    <button class="btn-secondary back-btn" (click)="goBack()" *ngIf="step > 1 && !bookingSuccess">
+      ← Back
+    </button>
+    <h1 class="page-title">{{ isReschedule ? 'Reschedule Appointment' : 'Book an Appointment' }}</h1>
+  </div>
+
+  <!-- Step indicator -->
+  <div class="steps" *ngIf="!bookingSuccess">
+    <div class="step" [class.active]="step === 1" [class.done]="step > 1">
+      <span class="step-num">1</span>
+      <span class="step-label">Specialization</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" [class.active]="step === 2" [class.done]="step > 2">
+      <span class="step-num">2</span>
+      <span class="step-label">Doctor</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" [class.active]="step === 3">
+      <span class="step-num">3</span>
+      <span class="step-label">Date &amp; Slot</span>
+    </div>
+  </div>
+
+  <!-- Success banner -->
+  <div class="success-card card" *ngIf="bookingSuccess">
+    <div class="success-icon" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round" width="56" height="56">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M7.5 12l3 3 5.5-5.5" />
+      </svg>
+    </div>
+    <h2>Appointment Booked!</h2>
+    <p>Your confirmation code is:</p>
+    <code class="confirmation-code">{{ confirmationCode }}</code>
+    <p class="text-muted">Redirecting to your appointments…</p>
+  </div>
+
+  <!-- Error -->
+  <div class="error-banner" *ngIf="errorMessage">
+    {{ errorMessage }}
+    <button class="retry-btn" *ngIf="step === 1" (click)="loadSpecializations()">Try Again</button>
+  </div>
+
+  <!-- STEP 1: Specialization -->
+  <div *ngIf="step === 1 && !bookingSuccess">
+    <div class="loading-row" *ngIf="loading">
+      <span class="spinner"></span> Loading specializations…
+    </div>
+    <p class="step-hint" *ngIf="!loading">Select a specialization to find available doctors.</p>
+    <div class="spec-grid" *ngIf="!loading && specializations.length > 0">
+      <button class="spec-card card" *ngFor="let spec of specializations" (click)="selectSpecialization(spec)">
+        {{ spec }}
+      </button>
+    </div>
+    <div class="empty-state" *ngIf="!loading && specializations.length === 0 && !errorMessage">
+      <p>No specializations found.</p>
+    </div>
+  </div>
+
+  <!-- STEP 2: Doctor list -->
+  <div *ngIf="step === 2 && !bookingSuccess">
+    <div class="loading-row" *ngIf="loading">
+      <span class="spinner"></span> Loading doctors…
+    </div>
+    <p class="step-hint" *ngIf="!loading">
+      Showing doctors for <strong>{{ selectedSpecialization }}</strong>.
+    </p>
+    <div class="doctor-list" *ngIf="!loading && doctors.length > 0">
+      <div class="doctor-card card" *ngFor="let doc of doctors" (click)="selectDoctor(doc)"
+        [class.selected]="selectedDoctor?.id === doc.id">
+        <div class="doctor-info">
+          <div class="doctor-avatar">👨‍⚕️</div>
+          <div>
+            <h3>Dr. {{ doc.name }}</h3>
+            <p class="text-muted">{{ doc.designation }}</p>
+            <p class="text-muted">{{ doc.specialization }}</p>
+            <p class="doctor-rating" *ngIf="doctorRatings[doc.id] !== undefined">
+              <span *ngIf="doctorRatings[doc.id] > 0">
+                ★ {{ doctorRatings[doc.id] | number:'1.1-1' }} / 5
+              </span>
+              <span *ngIf="doctorRatings[doc.id] === 0" class="text-muted">
+                No ratings yet
+              </span>
+            </p>
+          </div>
+        </div>
+        <button class="btn-primary select-btn">Select →</button>
+      </div>
+    </div>
+    <div class="empty-state" *ngIf="!loading && doctors.length === 0 && !errorMessage">
+      <p>No doctors found for this specialization.</p>
+    </div>
+  </div>
+
+  <!-- STEP 3: Date and slot -->
+  <div *ngIf="step === 3 && !bookingSuccess">
+    <div class="loading-row" *ngIf="loading">
+      <span class="spinner"></span> Loading available dates…
+    </div>
+    <p class="step-hint" *ngIf="!loading">
+      Booking with <strong>{{ selectedDoctor?.name }}</strong> — {{ selectedDoctor?.specialization }}.
+    </p>
+
+    <div class="card slot-section" *ngIf="!loading">
+      <div class="form-group">
+        <label for="dateSelect">Available dates</label>
+        <select id="dateSelect" name="dateSelect" [(ngModel)]="selectedDate" (ngModelChange)="onDateChange($event)">
+          <option value="">— Select a date —</option>
+          <option *ngFor="let d of availableDates" [value]="d">{{ d }}</option>
+        </select>
+        <p class="text-muted no-dates-hint" *ngIf="availableDates.length === 0 && !errorMessage">
+          ℹ️ This doctor has no scheduled availability yet.
+        </p>
+      </div>
+
+      <div *ngIf="selectedDate">
+        <div class="loading-row" *ngIf="slotsLoading">
+          <span class="spinner"></span> Loading slots…
+        </div>
+        <ng-container *ngIf="!slotsLoading">
+          <p class="slots-label">Available time slots</p>
+          <div class="slot-grid" *ngIf="slots.length > 0">
+  <button
+    class="slot-btn"
+    *ngFor="let slot of slots"
+    [class.selected]="selectedSlot?.startTime === slot.startTime"
+    [class.slot-booked]="slot.booked"
+    [disabled]="slot.booked"
+    (click)="!slot.booked && selectSlot(slot)">
+    {{ formatSlotTime(slot.startTime) }}
+    <span *ngIf="slot.booked" class="booked-label">Booked</span>
+  </button>
+</div>
+          <p class="text-muted" *ngIf="slots.length === 0">No available slots for this date.</p>
+        </ng-container>
+      </div>
+
+      <div class="confirm-row" *ngIf="selectedSlot">
+        <p class="confirm-summary">
+          {{ selectedDate }} at {{ formatSlotTime(selectedSlot.startTime) }}
+          with {{ selectedDoctor?.name }}
+        </p>
+        <button class="btn-primary confirm-btn" (click)="confirmBooking()" [disabled]="loading">
+          Confirm Booking
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

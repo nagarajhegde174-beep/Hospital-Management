@@ -1,0 +1,132 @@
+<div class="login-page">
+  <div class="login-card card">
+
+    <div class="login-header">
+      <div class="logo-row">
+        <img src="Hams.jpg" alt="HAMS" class="logo-img" />
+        <h1>HAMS</h1>
+      </div>
+      <p class="subtitle">Hospital Appointment Management System</p>
+    </div>
+
+    <div class="info-banner" *ngIf="infoMessage">{{ infoMessage }}</div>
+    <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" novalidate>
+
+      <div class="form-group">
+        <label for="email">Email address <span class="required">*</span></label>
+        <input type="email" id="email" name="email" [(ngModel)]="email" required email #emailField="ngModel"
+          (ngModelChange)="errorMessage = ''" placeholder="you@example.com" autocomplete="email" />
+        <span class="field-error" *ngIf="emailField.invalid && emailField.touched">
+          <span *ngIf="emailField.errors?.['required']">Email is required.</span>
+          <span *ngIf="emailField.errors?.['email']">Enter a valid email address.</span>
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password <span class="required">*</span></label>
+        <div class="password-wrapper">
+          <input [type]="showPassword ? 'text' : 'password'" id="password" name="password" [(ngModel)]="password"
+            required minlength="6" #passwordField="ngModel" (ngModelChange)="errorMessage = ''" placeholder="••••••••"
+            autocomplete="current-password" />
+          <button type="button" class="eye-btn" (click)="showPassword = !showPassword"
+            [title]="showPassword ? 'Hide password' : 'Show password'">
+            {{ showPassword ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        <span class="field-error" *ngIf="passwordField.invalid && passwordField.touched">
+          <span *ngIf="passwordField.errors?.['required']">Password is required.</span>
+          <span *ngIf="passwordField.errors?.['minlength']">Password must be at least 6 characters.</span>
+        </span>
+      </div>
+
+      <!-- ← ADD THIS -->
+      <div class="forgot-row">
+        <a class="forgot-link" href="javascript:void(0)" (click)="openForgotModal()">
+          Forgot password?
+        </a>
+      </div>
+
+      <button type="submit" class="btn-primary submit-btn" [disabled]="loading">
+        <span *ngIf="!loading">Sign in</span>
+        <span *ngIf="loading">Signing in…</span>
+      </button>
+
+    </form>
+
+    <p class="register-link">
+      New User? <a routerLink="/register">Create an account</a>
+    </p>
+
+  </div>
+</div>
+
+<!-- ── Forgot Password Modal — OUTSIDE the form and login-card ── -->
+<div class="modal-overlay" *ngIf="showForgotModal" (click)="closeForgotModal()">
+  <div class="modal-card card" (click)="$event.stopPropagation()">
+
+    <!-- Step 1: Enter email -->
+    <ng-container *ngIf="forgotStep === 'email'">
+      <h2 class="modal-title">Forgot password?</h2>
+      <p class="modal-subtitle">Enter your registered email to receive an OTP.</p>
+      <div class="error-banner" *ngIf="forgotError">{{ forgotError }}</div>
+      <div class="form-group">
+        <label for="forgotEmail">Email address</label>
+        <input type="email" id="forgotEmail" [(ngModel)]="forgotEmail" placeholder="you@example.com"
+          name="forgotEmail" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeForgotModal()">Cancel</button>
+        <button class="btn-primary" (click)="sendOtp()" [disabled]="forgotLoading || !forgotEmail">
+          {{ forgotLoading ? 'Sending OTP…' : 'Send OTP' }}
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- Step 2: Enter OTP -->
+    <ng-container *ngIf="forgotStep === 'otp'">
+      <h2 class="modal-title">Enter OTP</h2>
+      <p class="modal-subtitle">A 6-digit OTP was sent to <strong>{{ forgotEmail }}</strong>. Valid for 5 minutes.</p>
+      <div class="error-banner" *ngIf="forgotError">{{ forgotError }}</div>
+      <div class="form-group">
+        <label for="forgotOtp">OTP</label>
+        <input type="text" id="forgotOtp" [(ngModel)]="forgotOtp" placeholder="Enter 6-digit OTP" name="forgotOtp"
+          maxlength="6" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="forgotStep = 'email'">Back</button>
+        <button class="btn-primary" (click)="verifyOtp()"
+          [disabled]="!forgotOtp || forgotOtp.length < 6  ? true : null">
+          Verify OTP
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- Step 3: Enter new password -->
+    <ng-container *ngIf="forgotStep === 'reset'">
+      <h2 class="modal-title">Set new password</h2>
+      <p class="modal-subtitle">Enter a new password for <strong>{{ forgotEmail }}</strong></p>
+      <div class="success-banner" *ngIf="forgotSuccess">{{ forgotSuccess }}</div>
+      <div class="error-banner" *ngIf="forgotError">{{ forgotError }}</div>
+      <div *ngIf="!forgotSuccess">
+        <div class="form-group">
+          <label for="newPassword">New password</label>
+          <input type="password" id="newPassword" [(ngModel)]="newPassword" placeholder="••••••••" name="newPassword" />
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm password</label>
+          <input type="password" id="confirmPassword" [(ngModel)]="confirmPassword" placeholder="••••••••"
+            name="confirmPassword" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="forgotStep = 'otp'" *ngIf="!forgotSuccess">Back</button>
+        <button class="btn-primary" (click)="submitResetPassword()" [disabled]="forgotLoading || !!forgotSuccess">
+          {{ forgotLoading ? 'Resetting…' : 'Reset password' }}
+        </button>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

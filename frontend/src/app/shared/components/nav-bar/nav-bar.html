@@ -1,0 +1,70 @@
+<nav class="navbar" *ngIf="!hideNav">
+  <div class="nav-container">
+
+    <a class="nav-brand" routerLink="/">
+      <img src="Hams.jpg" alt="HAMS" class="brand-logo" />
+      <span class="brand-name">HAMS</span>
+    </a>
+
+    <!-- Desktop links -->
+    <div class="nav-links" *ngIf="auth.isLoggedIn()">
+      <ng-container *ngIf="isPatient">
+        <a routerLink="/patient/dashboard" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/patient/appointments" routerLinkActive="active">My Appointments</a>
+        <a routerLink="/patient/medical-history" routerLinkActive="active">Medical History</a>
+        <a routerLink="/patient/profile" routerLinkActive="active">My Profile</a>
+      </ng-container>
+      <ng-container *ngIf="isDoctor">
+        <a routerLink="/doctor/dashboard" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/doctor/appointments" routerLinkActive="active">Appointments</a>
+        <a routerLink="/doctor/schedule" routerLinkActive="active">Set Schedule</a>
+        <a routerLink="/doctor/profile" routerLinkActive="active">My Profile</a>
+      </ng-container>
+      <ng-container *ngIf="isAdmin">
+        <a routerLink="/admin/doctors" routerLinkActive="active">Doctors</a>
+        <a routerLink="/admin/patients" routerLinkActive="active">Patients</a>
+      </ng-container>
+    </div>
+
+    <!-- Desktop user area -->
+    <div class="nav-user" *ngIf="auth.isLoggedIn()">
+      <ng-container *ngIf="isDoctor"><span class="user-name">Hi, Dr. {{ displayName }}</span></ng-container> 
+      <ng-container *ngIf="isPatient"><span class="user-name">Hi, {{ displayName }}</span></ng-container> 
+      <ng-container *ngIf="isAdmin"><span class="user-name">Hi, {{ displayName }}</span></ng-container> 
+      <button class="btn-secondary logout-btn" (click)="logout()">Logout</button>
+    </div>
+
+    <div class="nav-user" *ngIf="!auth.isLoggedIn()">
+      <a routerLink="/login" class="nav-auth-link">Sign in</a>
+      <a routerLink="/register" class="btn-primary nav-register-btn">Register</a>
+    </div>
+
+    <!-- Hamburger button (mobile only) -->
+    <button class="hamburger" (click)="toggleMenu()" *ngIf="auth.isLoggedIn()" [class.open]="menuOpen" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+
+  </div>
+
+  <!-- Mobile dropdown menu -->
+  <div class="mobile-menu" *ngIf="menuOpen && auth.isLoggedIn()">
+    <div class="mobile-user">Hi, {{ displayName }}</div>
+    <ng-container *ngIf="isPatient">
+      <a routerLink="/patient/dashboard" routerLinkActive="active" (click)="closeMenu()">Dashboard</a>
+      <a routerLink="/patient/appointments" routerLinkActive="active" (click)="closeMenu()">My Appointments</a>
+      <a routerLink="/patient/medical-history" routerLinkActive="active" (click)="closeMenu()">Medical History</a>
+      <a routerLink="/patient/profile" routerLinkActive="active" (click)="closeMenu()">My Profile</a>
+    </ng-container>
+    <ng-container *ngIf="isDoctor">
+      <a routerLink="/doctor/dashboard" routerLinkActive="active" (click)="closeMenu()">Dashboard</a>
+      <a routerLink="/doctor/appointments" routerLinkActive="active" (click)="closeMenu()">Appointments</a>
+      <a routerLink="/doctor/schedule" routerLinkActive="active" (click)="closeMenu()">Set Schedule</a>
+      <a routerLink="/doctor/profile" routerLinkActive="active" (click)="closeMenu()">My Profile</a>
+    </ng-container>
+    <ng-container *ngIf="isAdmin">
+      <a routerLink="/admin/doctors" routerLinkActive="active" (click)="closeMenu()">Doctors</a>
+      <a routerLink="/admin/patients" routerLinkActive="active" (click)="closeMenu()">Patients</a>
+    </ng-container>
+    <button class="btn-danger mobile-logout" (click)="logout()">Logout</button>
+  </div>
+</nav>

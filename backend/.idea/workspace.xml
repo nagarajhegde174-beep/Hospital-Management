@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="31477422-c3ae-4bb8-b527-ae97c12afc10" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="3E1InRNoOHCK3V0uajip3DFBX23" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Api-Gateway.executor": "Run",
+    "Application.Appointment-Service.executor": "Run",
+    "Application.Auth-Service.executor": "Run",
+    "Application.Doctor-Profile.executor": "Run",
+    "Application.Doctor-Service.executor": "Run",
+    "Application.Eureka.executor": "Run",
+    "Application.Medical-history-service.executor": "Run",
+    "Application.Notification-service.executor": "Run",
+    "Application.Patient-service.executor": "Run",
+    "JUnit.DoctorScheduleServiceTest.createMonthlySchedule_shouldSucceed_whenDateIsValidAndShiftIsCorrect.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "kotlin-language-version-configured": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="JUnit.DoctorScheduleServiceTest.createMonthlySchedule_shouldSucceed_whenDateIsValidAndShiftIsCorrect">
+    <configuration name="Api-Gateway" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="com.hospital.management.apigateway.ApiGatewayApplication" />
+      <module name="api-gateway" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Appointment-Service" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="21" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="com.hospital.appointmentservice.AppointmentApplication" />
+      <module name="appointment-service" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Auth-Service" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="21" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="com.hospital.management.auth_service.AuthServiceApplication" />
+      <module name="auth-service" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Doctor-Profile" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="21" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="com.hospital.management.doctorprofile.DoctorProfileApplication" />
+      <module name="doctor-profile-service" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Doctor-Service" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="21" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="com.hospital.management.doctorservice.DoctorserviceApplication" />
+      <module name="doctor-service" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Eureka" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="21" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="com.hospital.management.eurekaserver.EurekaServerApplication" />
+      <module name="eureka-server" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Medical-history-service" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="21" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="com.hospital.management.medicalhistoryservice.MedicalHistoryServiceApplication" />
+      <module name="medical-history-service" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Notification-service" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="21" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="com.notification.management.system.NotificationApplication" />
+      <module name="notification-service" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Patient-service" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="21" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="com.hospital.management.patientservice.PatientApplication" />
+      <module name="patient-service" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application-service" type="CompoundRunConfigurationType">
+      <toRun name="Api-Gateway" type="Application" />
+      <toRun name="Appointment-Service" type="Application" />
+      <toRun name="Auth-Service" type="Application" />
+      <toRun name="Doctor-Profile" type="Application" />
+      <toRun name="Doctor-Service" type="Application" />
+      <toRun name="Medical-history-service" type="Application" />
+      <toRun name="Notification-service" type="Application" />
+      <toRun name="Patient-service" type="Application" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Eureka-application" type="CompoundRunConfigurationType">
+      <toRun name="Eureka" type="Application" />
+      <method v="2" />
+    </configuration>
+    <configuration name="DoctorScheduleServiceTest.createMonthlySchedule_shouldSucceed_whenDateIsValidAndShiftIsCorrect" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="doctor-service" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.hospital.management.doctorservice.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.hospital.management.doctorservice.service" />
+      <option name="MAIN_CLASS_NAME" value="com.hospital.management.doctorservice.service.DoctorScheduleServiceTest" />
+      <option name="METHOD_NAME" value="createMonthlySchedule_shouldSucceed_whenDateIsValidAndShiftIsCorrect" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.Api-Gateway" />
+      <item itemvalue="Application.Eureka" />
+      <item itemvalue="Application.Auth-Service" />
+      <item itemvalue="Application.Appointment-Service" />
+      <item itemvalue="Application.Doctor-Profile" />
+      <item itemvalue="Application.Doctor-Service" />
+      <item itemvalue="Application.Medical-history-service" />
+      <item itemvalue="Application.Notification-service" />
+      <item itemvalue="Application.Patient-service" />
+      <item itemvalue="Compound.Application-service" />
+      <item itemvalue="Compound.Eureka-application" />
+      <item itemvalue="JUnit.DoctorScheduleServiceTest.createMonthlySchedule_shouldSucceed_whenDateIsValidAndShiftIsCorrect" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.DoctorScheduleServiceTest.createMonthlySchedule_shouldSucceed_whenDateIsValidAndShiftIsCorrect" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="31477422-c3ae-4bb8-b527-ae97c12afc10" name="Changes" comment="" />
+      <created>1779339818193</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1779339818193</updated>
+    </task>
+    <servers />
+  </component>
+</project>

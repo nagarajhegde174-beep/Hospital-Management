@@ -1,0 +1,135 @@
+<div class="page-container">
+  <h1 class="page-title">My Profile</h1>
+
+  <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="success-banner" *ngIf="successMessage">{{ successMessage }}</div>
+
+  <!-- Skeleton while loading -->
+  <div class="profile-card card skeleton-card" *ngIf="loading">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)"
+          stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </div>
+      <div class="skeleton-line wide" style="margin: 0 auto 8px; max-width: 180px;"></div>
+      <div class="skeleton-line medium" style="margin: 0 auto; max-width: 140px;"></div>
+    </div>
+    <div class="profile-body">
+      <div class="skeleton-line wide"></div>
+      <div class="skeleton-line medium"></div>
+      <div class="skeleton-line medium"></div>
+      <div class="skeleton-line narrow"></div>
+    </div>
+  </div>
+
+  <!-- Profile loaded -->
+  <div class="profile-card card" *ngIf="!loading && profile">
+
+    <!-- Sidebar always visible -->
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round" width="44" height="44">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </div>
+      <div class="profile-name">Dr. {{ profile.name }}</div>
+      <div class="profile-spec">{{ profile.specialization }}<br>{{ profile.designation }}</div>
+    </div>
+
+    <!-- View mode -->
+    <div class="profile-body" *ngIf="!editMode">
+      <div class="field-row">
+        <div class="field-icon">📧</div>
+        <div class="field-content">
+          <div class="field-label">Email</div>
+          <div class="field-value">{{ profile.email }}</div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-icon">🩺</div>
+        <div class="field-content">
+          <div class="field-label">Specialization</div>
+          <div class="field-value">{{ profile.specialization }}</div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-icon">🏥</div>
+        <div class="field-content">
+          <div class="field-label">Designation</div>
+          <div class="field-value">{{ profile.designation }}</div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-icon">📞</div>
+        <div class="field-content">
+          <div class="field-label">Contact</div>
+          <div class="field-value">{{ profile.contactDetails }}</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn-primary" (click)="startEdit()">Edit Profile</button>
+      </div>
+    </div>
+
+    <!-- Edit mode -->
+    <div class="profile-body" *ngIf="editMode">
+      <form (ngSubmit)="saveProfile()" #profileForm="ngForm" novalidate>
+        <div class="form-group">
+          <label>Full Name <span class="required">*</span></label>
+          <input type="text" name="name" [(ngModel)]="form.name" required minlength="2" #nameField="ngModel" />
+          <span class="field-error" *ngIf="nameField.invalid && nameField.touched">
+            <span *ngIf="nameField.errors?.['required']">Full name is required.</span>
+            <span *ngIf="nameField.errors?.['minlength']">At least 2 characters.</span>
+          </span>
+        </div>
+        <div class="form-group">
+          <label>Specialization <span class="required">*</span></label>
+          <input type="text" name="specialization" [(ngModel)]="form.specialization" required minlength="2"
+            #specField="ngModel" />
+          <span class="field-error" *ngIf="specField.invalid && specField.touched">
+            <span *ngIf="specField.errors?.['required']">Specialization is required.</span>
+            <span *ngIf="specField.errors?.['minlength']">At least 2 characters.</span>
+          </span>
+        </div>
+        <div class="form-group">
+          <label>Designation <span class="required">*</span></label>
+          <input type="text" name="designation" [(ngModel)]="form.designation" required minlength="2"
+            #desigField="ngModel" />
+          <span class="field-error" *ngIf="desigField.invalid && desigField.touched">
+            <span *ngIf="desigField.errors?.['required']">Designation is required.</span>
+            <span *ngIf="desigField.errors?.['minlength']">At least 2 characters.</span>
+          </span>
+        </div>
+        <div class="form-group">
+          <label>Contact Details <span class="required">*</span></label>
+          <input type="text" name="contactDetails" [(ngModel)]="form.contactDetails" required pattern="[0-9]{10}"
+            #contactField="ngModel" placeholder="10-digit mobile number" />
+          <span class="field-error" *ngIf="contactField.invalid && contactField.touched">
+            <span *ngIf="contactField.errors?.['required']">Contact details are required.</span>
+            <span *ngIf="contactField.errors?.['pattern']">Enter a valid 10-digit number.</span>
+          </span>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary" [disabled]="saving || profileForm.invalid">
+            {{ saving ? 'Saving…' : 'Save Changes' }}
+          </button>
+          <button type="button" class="btn-secondary" (click)="cancelEdit()" [disabled]="saving">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Not found -->
+  <div class="empty-state" *ngIf="!loading && !profile && !errorMessage">
+    <p>Profile not found.</p>
+  </div>
+
+</div>
